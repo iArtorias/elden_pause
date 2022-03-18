@@ -22,6 +22,7 @@
 #include <memoryapi.h>
 #include <synchapi.h>
 #include <WinUser.h>
+#include <Unknwn.h>
 #include <filesystem>
 #include <Xinput.h>
 
