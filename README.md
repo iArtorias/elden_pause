@@ -1,4 +1,4 @@
-# ⚔️ **EldenPause**
+# ⚔️⏸️ **EldenPause**
 [![GitHub All Releases](https://img.shields.io/github/downloads/iArtorias/elden_pause/total.svg)](https://github.com/iArtorias/elden_pause/releases)
 
 ### A useful mod for Elden Ring allowing you to pause the game any time you want.
