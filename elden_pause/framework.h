@@ -20,8 +20,10 @@
 #include <winternl.h>
 #include <processthreadsapi.h>
 #include <memoryapi.h>
+#include <synchapi.h>
 #include <WinUser.h>
 #include <filesystem>
+#include <Xinput.h>
 
 // WinAPI stub
 #include <stub.h>

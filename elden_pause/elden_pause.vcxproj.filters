@@ -19,6 +19,9 @@
     <Filter Include="Header Files\deps\mem">
       <UniqueIdentifier>{09e4bcf7-bcf0-4f17-80d4-58c2f69c0f5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\deps\inireader">
+      <UniqueIdentifier>{1ed93747-03ba-4496-96f4-fe7ac00234ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -104,6 +107,15 @@
     </ClInclude>
     <ClInclude Include="include\stub.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\inireader\conversion.hpp">
+      <Filter>Header Files\deps\inireader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\inireader\inireader.hpp">
+      <Filter>Header Files\deps\inireader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,13 @@
 #include "pch.h"
 
+// Various
+#include <misc.h>
+
 // mem (https://github.com/0x1F9F1/mem)
 #include <mem/pattern.h>
+
+// inireader (https://github.com/X-rays5/inireader)
+#include <inireader/inireader.hpp>
 
 // The current patch thread state
 volatile bool m_ThreadRunning{ true };
@@ -39,6 +45,48 @@ inline void patch( const LPVOID address, const uint8_t* patch, const size_t size
         VirtualProtect( address, size, old_protect, &old_protect );
     }
     catch (...)
+    {
+        return;
+    }
+}
+
+
+// Read the current configuration file
+inline void read_config( const fs::path& cfg )
+{
+    ini::Parser ini;
+
+    try
+    {
+        std::ifstream config_in( cfg, std::ios::in );
+
+        if (config_in.is_open())
+        {
+            ini.Parse( config_in );
+
+            if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_KEYBOARD_BUTTON ))
+            {
+                auto const button_keyboard = ini[config::SECTION_SETTINGS][config::KEY_KEYBOARD_BUTTON].as<int32_t>();
+                config::OPTION_KEYBOARD_BUTTON = button_keyboard;
+            }
+
+            if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_CONTROLLER_ENABLED ))
+            {
+                std::string controller_enabled = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_ENABLED].as<std::string>();
+                config::OPTION_CONTROLLER_ENABLED = controller_enabled;
+            }
+
+            if (config::OPTION_CONTROLLER_ENABLED == "true" || config::OPTION_CONTROLLER_ENABLED == "1")
+            {
+                if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_CONTROLLER_BUTTON ))
+                {
+                    auto const button_controller = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_BUTTON].as<int32_t>();
+                    config::OPTION_CONTROLLER_BUTTON = button_controller;
+                }
+            }
+        }
+    }
+    catch (std::runtime_error&)
     {
         return;
     }
@@ -96,6 +144,9 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                 // The virtual size of that section
                 auto const size = section->Misc.VirtualSize;
 
+                // Read the data from configuration file
+                read_config( "elden_pause.ini" );
+
                 /*
                     je eldenring.XXXXXXXXXXXX
                     mov byte ptr ds:[rbx+XXX], 0
@@ -107,11 +158,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
                 if (address != nullptr)
                 {
-                    auto work = [] ( LPVOID data ) -> DWORD
+                    // Run keyboard specific thread
+                    auto keyboard_thread = [] ( LPVOID data ) -> DWORD
                     {
                         while (m_ThreadRunning)
                         {
-                            if ((GetAsyncKeyState( 0x50 ) & 0x01)) // "P" button
+                            if ((GetAsyncKeyState( config::OPTION_KEYBOARD_BUTTON ) & 0x01))
                             {
                                 update_state( address );
                             }
@@ -120,7 +172,50 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                         return 0x0;
                     };
 
-                    CreateThread( nullptr, 0x0, work, nullptr, 0x0, nullptr );
+                    CreateThread( nullptr, 0x0, keyboard_thread, nullptr, 0x0, nullptr );
+
+
+                    // Proceed in case the controller option is enabled
+                    if (config::OPTION_CONTROLLER_ENABLED == "true" || config::OPTION_CONTROLLER_ENABLED == "1")
+                    {
+                        // Run controller specific thread
+                        auto controller_thread = [] ( LPVOID data ) -> DWORD
+                        {
+                            while (m_ThreadRunning)
+                            {
+                                // The number of detected devices
+                                int32_t devices_num{ 0x0 };
+
+                                for (DWORD i{ 0x0 }; i < XUSER_MAX_COUNT; i++)
+                                {
+                                    XINPUT_STATE state{};
+                                    ZeroMemory( &state, sizeof( XINPUT_STATE ) );
+
+                                    // Get the current state of the controller.
+                                    auto const result = ::XInputGetState( i, &state );
+
+                                    if (result == 0x0) // ERROR_SUCCESS
+                                    {
+                                        ++devices_num;
+                                        XINPUT_KEYSTROKE keystroke{};
+                                        ::XInputGetKeystroke( i, XINPUT_FLAG_GAMEPAD, &keystroke );
+
+                                        // The button was pressed
+                                        if (keystroke.VirtualKey == config::OPTION_CONTROLLER_BUTTON && keystroke.Flags == XINPUT_KEYSTROKE_KEYDOWN)
+                                        {
+                                            update_state( address );
+                                        }
+                                    }
+                                }
+
+                                ::Sleep( (devices_num > 0x0) ? xinput::SLEEP_ACTIVE : xinput::SLEEP_INACTIVE );
+                            }
+
+                            return 0x0;
+                        };
+
+                        CreateThread( nullptr, 0x0, controller_thread, nullptr, 0x0, nullptr );
+                    }
                 }
             }
 
