@@ -30,6 +30,9 @@
 ## Demo
 - Visit the following [link](https://i.imgur.com/MeYPyva.mp4)
 
+## NexusMods link
+- [Find it here](https://www.nexusmods.com/eldenring/mods/231)
+
 ## Stuff used
 
 - **Mem** (https://github.com/0x1F9F1/mem)
