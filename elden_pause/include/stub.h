@@ -43,6 +43,9 @@ private:
     const char* m_OldProxyDll{ "version.dll" };
     const char* m_ProxyDll{ "dinput8.dll" };
 
+    // A full path to the proxy library
+    fs::path m_proxyPath{};
+
 public:
 
     /// <summary>
@@ -54,10 +57,11 @@ public:
         return instance;
     }
 
-
-    // A full path to the proxy library
-    fs::path m_proxy_path{};
-
+    // Get the current loaded proxy path
+    fs::path get_proxy_path() const
+    {
+        return m_proxyPath;
+    }
 
     // Resolve typedefs
     __typedef_func( DirectInput8Create, HRESULT, HINSTANCE, DWORD, const IID* const, LPVOID*, LPUNKNOWN );
@@ -79,7 +83,7 @@ public:
 
         wchar_t proxy_path[4096]{};
         GetModuleFileNameW( mod, proxy_path, (sizeof( proxy_path )) );
-        m_proxy_path = fs::path( proxy_path ).parent_path();
+        m_proxyPath = fs::path( proxy_path ).parent_path();
 
         wchar_t sys_path[MAX_PATH]{};
         GetSystemDirectoryW( sys_path, MAX_PATH );

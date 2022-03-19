@@ -145,7 +145,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                 auto const size = section->Misc.VirtualSize;
 
                 // Read the data from configuration file
-                read_config( "elden_pause.ini" );
+                read_config( CProxyStub::instance().get_proxy_path() / "elden_pause.ini" );
 
                 /*
                     je eldenring.XXXXXXXXXXXX

@@ -1,4 +1,4 @@
-# ⚔️⏸️ **EldenPause** _v1.1.1_
+# ⚔️⏸️ **EldenPause** _v1.1.2_
 [![GitHub All Releases](https://img.shields.io/github/downloads/iArtorias/elden_pause/total.svg)](https://github.com/iArtorias/elden_pause/releases)
 
 ### A useful mod for Elden Ring allowing you to pause the game any time you want.
@@ -7,10 +7,11 @@
 
 1. Download the [latest release](https://github.com/iArtorias/elden_pause/releases/latest)
 2. Copy the `dinput8.dll` and `elden_pause.ini` to your Elden Ring game folder
-3. Launch the game with EAC disabled
+   * If you're using [Elden Ring Mod Loader](https://www.nexusmods.com/eldenring/mods/117) by [techiew](https://github.com/techiew/EldenRingModLoader), copy `dinput8.dll` and `elden_pause.ini` to the `mods` directory and rename the library to something like `elden_pause.dll`
+4. Launch the game with EAC disabled
    * To do this, create the file `steam_appid.txt` with the text `1245620` in your game folder and run `eldenring.exe` directly
-4. Press `P` button to pause the game. Press the same button again to resume the game.
-5. If you're using controller, press `Start` button
+5. Press `P` button to pause the game. Press the same button again to resume the game.
+6. If you're using controller, press `Start` button
 
 ## Remapping the keys
 
