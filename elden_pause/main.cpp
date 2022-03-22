@@ -14,6 +14,7 @@ volatile bool m_ThreadRunning{ true };
 
 // The default button state
 EButtonState m_CurrentState{ EButtonState::k_Deactivated };
+bool wasPressed = false;
 
 
 // Find the required address by the given pattern
@@ -82,6 +83,11 @@ inline void read_config( const fs::path& cfg )
                 {
                     auto const button_controller = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_BUTTON].as<int32_t>();
                     config::OPTION_CONTROLLER_BUTTON = button_controller;
+                }
+                if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_CONTROLLER_BUTTON2 ))
+                {
+                    auto const button_controller2 = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_BUTTON2].as<int32_t>();
+                    config::OPTION_CONTROLLER_BUTTON2 = button_controller2;
                 }
             }
         }
@@ -196,14 +202,17 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
                                     if (result == 0x0) // ERROR_SUCCESS
                                     {
-                                        ++devices_num;
-                                        XINPUT_KEYSTROKE keystroke{};
-                                        ::XInputGetKeystroke( i, XINPUT_FLAG_GAMEPAD, &keystroke );
+                                        bool keyPressed = ( ( state.Gamepad.wButtons & config::OPTION_CONTROLLER_BUTTON ) != 0 );
+                                        bool modifierPressed = ( ( state.Gamepad.wButtons & config::OPTION_CONTROLLER_BUTTON2 ) != 0);
 
-                                        // The button was pressed
-                                        if (keystroke.VirtualKey == config::OPTION_CONTROLLER_BUTTON && keystroke.Flags == XINPUT_KEYSTROKE_KEYDOWN)
+                                        if (keyPressed && modifierPressed && !wasPressed) // Check if both buttons are pressed and if buttons are not held down
                                         {
+                                            wasPressed = true;
                                             update_state( address );
+                                        }
+                                        else if (!keyPressed || !modifierPressed && wasPressed) // Check if button was released
+                                        {
+                                            wasPressed = false;
                                         }
                                     }
                                 }
