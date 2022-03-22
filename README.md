@@ -1,4 +1,4 @@
-# ⚔️⏸️ **EldenPause** _v1.1.2_
+# ⚔️⏸️ **EldenPause** _v1.1.3_
 [![GitHub All Releases](https://img.shields.io/github/downloads/iArtorias/elden_pause/total.svg)](https://github.com/iArtorias/elden_pause/releases)
 
 ### A useful mod for Elden Ring allowing you to pause the game any time you want.
@@ -18,6 +18,7 @@
 1. Open `elden_pause.ini`
 2. If you want to change the keyboard key code, edit the `KeyboardButton` option value
 3. If you want to change the controller key code, edit the `ControllerButton` option value
+4. If you want to use a combo of two buttons, edit the `ControllerButton2` option value (`0xFFFF` by default aka `Disabled`)
    * `Optional:` you can change the `ControllerEnabled` option value to `false` if you don't need to use the controller code
 
 ## Advantages

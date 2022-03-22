@@ -12,9 +12,11 @@
 // The current patch thread state
 volatile bool m_ThreadRunning{ true };
 
+// The flag indicating that the button was pressed
+volatile bool m_WasPressed{ false };
+
 // The default button state
 EButtonState m_CurrentState{ EButtonState::k_Deactivated };
-bool wasPressed = false;
 
 
 // Find the required address by the given pattern
@@ -202,17 +204,17 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
                                     if (result == 0x0) // ERROR_SUCCESS
                                     {
-                                        bool keyPressed = ( ( state.Gamepad.wButtons & config::OPTION_CONTROLLER_BUTTON ) != 0 );
-                                        bool modifierPressed = ( ( state.Gamepad.wButtons & config::OPTION_CONTROLLER_BUTTON2 ) != 0);
+                                        bool key_pressed = ((state.Gamepad.wButtons & config::OPTION_CONTROLLER_BUTTON) != 0);
+                                        bool modifier_pressed = ((state.Gamepad.wButtons & config::OPTION_CONTROLLER_BUTTON2) != 0);
 
-                                        if (keyPressed && modifierPressed && !wasPressed) // Check if both buttons are pressed and if buttons are not held down
+                                        if (key_pressed && modifier_pressed && !m_WasPressed) // Check if both buttons are pressed and if buttons are not held down
                                         {
-                                            wasPressed = true;
+                                            m_WasPressed = true;
                                             update_state( address );
                                         }
-                                        else if (!keyPressed || !modifierPressed && wasPressed) // Check if button was released
+                                        else if (!key_pressed || !modifier_pressed && m_WasPressed) // Check if button was released
                                         {
-                                            wasPressed = false;
+                                            m_WasPressed = false;
                                         }
                                     }
                                 }
