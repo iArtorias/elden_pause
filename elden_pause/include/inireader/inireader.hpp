@@ -222,7 +222,7 @@ namespace ini {
      * @return count of non root sections
      */
     [[nodiscard]] inline std::uint32_t GetSectionCount() const {
-      return root_->sections.size();
+      return static_cast<std::uint32_t>(root_->sections.size());
     }
 
     /**
@@ -374,7 +374,7 @@ namespace ini {
       if (line.empty()) return {};
 
       if (line[0] == '[') {
-        std::uint32_t search_pos = 1;
+        std::size_t search_pos = 1;
         auto close_pos = line.find(']', search_pos);
         while(close_pos != std::string::npos && line[close_pos - 1] == '\\') {
           search_pos = close_pos + 1;
