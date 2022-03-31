@@ -104,6 +104,9 @@ inline void read_config( const fs::path& cfg )
 // Update the current button state
 void update_state( const LPVOID address )
 {
+    if (FindWindowA("ELDEN RING™", "ELDEN RING™") != GetForegroundWindow() && !config::OPTION_PAUSE_WHEN_UNFOCUSED)
+        return;
+
     switch (m_CurrentState)
     {
         case EButtonState::k_Activated:
