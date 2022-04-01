@@ -69,25 +69,51 @@ inline void read_config( const fs::path& cfg )
 
             if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_KEYBOARD_BUTTON ))
             {
+                /*
+                * [Settings]
+                * KeyboardButton=X
+                */
                 auto const button_keyboard = ini[config::SECTION_SETTINGS][config::KEY_KEYBOARD_BUTTON].as<int32_t>();
                 config::OPTION_KEYBOARD_BUTTON = button_keyboard;
             }
 
             if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_CONTROLLER_ENABLED ))
-            {
-                std::string controller_enabled = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_ENABLED].as<std::string>();
+            {                
+                /*
+                * [Settings]
+                * ControllerEnabled=X
+                */
+                bool controller_enabled = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_ENABLED].as<bool>();
                 config::OPTION_CONTROLLER_ENABLED = controller_enabled;
             }
 
-            if (config::OPTION_CONTROLLER_ENABLED == "true" || config::OPTION_CONTROLLER_ENABLED == "1")
+            if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_PAUSE_WHEN_UNFOCUSED ))
+            {
+                /*
+                * [Settings]
+                * PauseWhenUnfocused=X
+                */
+                bool pause_unfocused = ini[config::SECTION_SETTINGS][config::KEY_PAUSE_WHEN_UNFOCUSED].as<bool>();
+                config::OPTION_PAUSE_WHEN_UNFOCUSED = pause_unfocused;
+            }
+
+            if (config::OPTION_CONTROLLER_ENABLED)
             {
                 if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_CONTROLLER_BUTTON ))
-                {
+                {                
+                    /*
+                    * [Settings]
+                    * ControllerButton=X
+                    */
                     auto const button_controller = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_BUTTON].as<int32_t>();
                     config::OPTION_CONTROLLER_BUTTON = button_controller;
                 }
                 if (ini[config::SECTION_SETTINGS].HasValue( config::KEY_CONTROLLER_BUTTON2 ))
-                {
+                {                    
+                    /*
+                    * [Settings]
+                    * ControllerButton2=X
+                    */
                     auto const button_controller2 = ini[config::SECTION_SETTINGS][config::KEY_CONTROLLER_BUTTON2].as<int32_t>();
                     config::OPTION_CONTROLLER_BUTTON2 = button_controller2;
                 }
@@ -104,8 +130,11 @@ inline void read_config( const fs::path& cfg )
 // Update the current button state
 void update_state( const LPVOID address )
 {
-    if (FindWindowA("ELDEN RING™", "ELDEN RING™") != GetForegroundWindow() && !config::OPTION_PAUSE_WHEN_UNFOCUSED)
-        return;
+    if (!config::OPTION_PAUSE_WHEN_UNFOCUSED)
+    {
+        if (FindWindowA( "ELDEN RING™", "ELDEN RING™" ) != GetForegroundWindow())
+            return;
+    }
 
     switch (m_CurrentState)
     {
@@ -187,7 +216,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 
                     // Proceed in case the controller option is enabled
-                    if (config::OPTION_CONTROLLER_ENABLED == "true" || config::OPTION_CONTROLLER_ENABLED == "1")
+                    if (config::OPTION_CONTROLLER_ENABLED)
                     {
                         // Run controller specific thread
                         auto controller_thread = [] ( LPVOID data ) -> DWORD
